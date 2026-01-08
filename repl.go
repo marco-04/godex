@@ -20,8 +20,13 @@ var availableCommands = map[string]cliCommand{
 		},
 		"map": {
 				name:        "map",
-				description: "Display the name of 20 locations",
-				callback:    commandExit,
+				description: "Display the name of the next 20 locations",
+				callback:    commandMapNext,
+		},
+		"mapb": {
+				name:        "map",
+				description: "Display the name of the previous 20 locations",
+				callback:    commandMapPrev,
 		},
 }
 
@@ -36,6 +41,35 @@ func cleanInput(text string) []string {
 	}
 
 	return words
+}
+
+func printLocations(locations []Location) {
+	for _, location := range locations {
+		fmt.Println(location.Name)
+	}
+}
+
+var locationNavigator = LocationNavigator()
+var commandMapNext = func() error {
+	locations, err := locationNavigator(next)
+	if err != nil {
+		return err
+	}
+
+	printLocations(locations)
+
+	return nil
+}
+
+var commandMapPrev = func() error {
+	locations, err := locationNavigator(prev)
+	if err != nil {
+		return err
+	}
+
+	printLocations(locations)
+
+	return nil
 }
 
 func dispatchCommand(cmd []string) {
@@ -57,7 +91,7 @@ func commandExit() error {
 }
 
 func commandHelp() error {
-	fmt.Println("Welcome to the Pokedex!\nUsage:\n")
+	fmt.Print("Welcome to the Pokedex!\nUsage:\n\n")
 	fmt.Println("help: Displays a help message")
 	for k, v := range availableCommands {
 		fmt.Printf("%s: %s\n", k, v.description)
