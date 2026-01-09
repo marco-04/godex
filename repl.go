@@ -144,6 +144,33 @@ func commandCatch(args []string) error {
 	return nil
 }
 
+func commandInspect(args []string) error {
+	if len(args) == 0 {
+		return fmt.Errorf("No pokemon specified")
+	}
+
+	pokemon := args[0]
+	info, ok := pokedex.Get(pokemon)
+	if !ok {
+		return fmt.Errorf("you have not caught that pokemon")
+	}
+
+	fmt.Printf("Name: %s\n", info.Name)
+	fmt.Printf("BaseEXP: %d/500 (for determining catch rate in this program)\n", info.BaseEXP)
+	fmt.Printf("Height: %d\n", info.Height)
+	fmt.Printf("Weight: %d\n", info.Weight)
+	fmt.Println("Stats:")
+	for _, stat := range info.Stats {
+		fmt.Printf(" - %s: %d\n", stat.Name, stat.BaseStat)
+	}
+	fmt.Println("Types:")
+	for _, typ := range info.Types {
+		fmt.Printf(" - %s\n", typ.Name)
+	}
+
+	return nil
+}
+
 func commandExit([]string) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
@@ -190,6 +217,11 @@ func init() {
 				name:        "catch",
 				description: "Try to catch a Pokémon",
 				callback:    commandCatch,
+		},
+		"inspect": {
+				name:        "inspect",
+				description: "Inspect a caught Pokèmon",
+				callback:    commandInspect,
 		},
 	}
 }
